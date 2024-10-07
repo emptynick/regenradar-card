@@ -166,6 +166,7 @@ export class RegenRadarMap extends ReactiveElement {
     private _loading = false;
     private map: Map;
     private frameControl: FrameControl;
+    private interval: ReturnType<typeof setInterval>;
 
     public connectedCallback(): void {
         super.connectedCallback();
@@ -181,6 +182,9 @@ export class RegenRadarMap extends ReactiveElement {
         if (this.map) {
             this.map.dispose();
             this.map = undefined;
+        }
+        if (this.interval) {
+            clearInterval(this.interval);
         }
 
         this._loaded = false;
@@ -254,6 +258,7 @@ export class RegenRadarMap extends ReactiveElement {
             // Step 5: Add the vector layer to the map
             this.map.addLayer(vectorLayer);
             this.updateData(true);
+            this.interval = setInterval(() => this.updateData(), 1000 * 60 * 15); // Update every 15 minutes
 
             this._loaded = true;
         } finally {
@@ -341,11 +346,9 @@ export class RegenRadarMap extends ReactiveElement {
     }
 
     private _draw() {
-        console.log('draw');
     }
 
     private updateData(first=false): void {
-        console.log('update');
         const start = new Date();
         const endDate = new Date(start.getTime() + 1000 * 60 * 60 * 3);
 

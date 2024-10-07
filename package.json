@@ -8,11 +8,12 @@
   },
   "scripts": {
     "watch": "parcel watch",
-    "build": "parcel build"
+    "build": "parcel build --no-content-hash src/index.ts --dist-dir dist/"
   },
   "devDependencies": {
     "@parcel/transformer-inline-string": "^2.8.3",
-    "parcel": "^2.12.0"
+    "parcel": "^2.12.0",
+    "parcel-namer-hashless": "^1.0.6"
   },
   "dependencies": {
     "custom-card-helpers": "^1.9.0",
@@ -24,5 +25,9 @@
   },
   "@parcel/transformer-css": {
     "cssModules": true
+  },
+  "parcel-namer-hashless": {
+    "include": [".js$", ".css$", ".png$", ".svg$"],
+    "mode": "all"
   }
 }

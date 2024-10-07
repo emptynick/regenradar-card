@@ -2762,7 +2762,7 @@ function $563fcf7ce7e6c5aa$export$4682af2d9ee91415(n) {
 
 
 /**
- * @module ol/Map
+ * @module ol/Feature
  */ /**
  * @module ol/Object
  */ /**
@@ -3580,8 +3580,9 @@ class $d6cd7f1b627d5e92$export$cf395d7c4a2d5a17 extends (0, $f22c10e3757627da$ex
 var $d6cd7f1b627d5e92$export$2e2bcd8739ae039 = $d6cd7f1b627d5e92$var$BaseObject;
 
 
+
 /**
- * @module ol/Collection
+ * @module ol/asserts
  */ /**
  * @module ol/AssertionError
  */ /** @type {Object<number, string>} */ const $fc1e13bda45b0626$var$messages = {
@@ -3672,6 +3673,264 @@ var $d6cd7f1b627d5e92$export$2e2bcd8739ae039 = $d6cd7f1b627d5e92$var$BaseObject;
 var $fc1e13bda45b0626$export$2e2bcd8739ae039 = $fc1e13bda45b0626$var$AssertionError;
 
 
+function $1e19c69d18d8b77c$export$a7a9523472993e97(assertion, errorCode) {
+    if (!assertion) throw new (0, $fc1e13bda45b0626$export$2e2bcd8739ae039)(errorCode);
+}
+
+
+
+/**
+ * @typedef {typeof Feature|typeof import("./render/Feature.js").default} FeatureClass
+ */ /**
+ * @typedef {Feature|import("./render/Feature.js").default} FeatureLike
+ */ /***
+ * @template Return
+ * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
+ *   import("./Observable").OnSignature<import("./ObjectEventType").Types|'change:geometry', import("./Object").ObjectEvent, Return> &
+ *   import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|import("./ObjectEventType").Types
+ *     |'change:geometry', Return>} FeatureOnSignature
+ */ /***
+ * @template Geometry
+ * @typedef {Object<string, *> & { geometry?: Geometry }} ObjectWithGeometry
+ */ /**
+ * @classdesc
+ * A vector object for geographic features with a geometry and other
+ * attribute properties, similar to the features in vector file formats like
+ * GeoJSON.
+ *
+ * Features can be styled individually with `setStyle`; otherwise they use the
+ * style of their vector layer.
+ *
+ * Note that attribute properties are set as {@link module:ol/Object~BaseObject} properties on
+ * the feature object, so they are observable, and have get/set accessors.
+ *
+ * Typically, a feature has a single geometry property. You can set the
+ * geometry using the `setGeometry` method and get it with `getGeometry`.
+ * It is possible to store more than one geometry on a feature using attribute
+ * properties. By default, the geometry used for rendering is identified by
+ * the property name `geometry`. If you want to use another geometry property
+ * for rendering, use the `setGeometryName` method to change the attribute
+ * property associated with the geometry for the feature.  For example:
+ *
+ * ```js
+ *
+ * import Feature from 'ol/Feature.js';
+ * import Polygon from 'ol/geom/Polygon.js';
+ * import Point from 'ol/geom/Point.js';
+ *
+ * const feature = new Feature({
+ *   geometry: new Polygon(polyCoords),
+ *   labelPoint: new Point(labelCoords),
+ *   name: 'My Polygon',
+ * });
+ *
+ * // get the polygon geometry
+ * const poly = feature.getGeometry();
+ *
+ * // Render the feature as a point using the coordinates from labelPoint
+ * feature.setGeometryName('labelPoint');
+ *
+ * // get the point geometry
+ * const point = feature.getGeometry();
+ * ```
+ *
+ * @api
+ * @template {import("./geom/Geometry.js").default} [Geometry=import("./geom/Geometry.js").default]
+ */ class $488541e07685eb37$var$Feature extends (0, $d6cd7f1b627d5e92$export$2e2bcd8739ae039) {
+    /**
+   * @param {Geometry|ObjectWithGeometry<Geometry>} [geometryOrProperties]
+   *     You may pass a Geometry object directly, or an object literal containing
+   *     properties. If you pass an object literal, you may include a Geometry
+   *     associated with a `geometry` key.
+   */ constructor(geometryOrProperties){
+        super();
+        /***
+     * @type {FeatureOnSignature<import("./events").EventsKey>}
+     */ this.on;
+        /***
+     * @type {FeatureOnSignature<import("./events").EventsKey>}
+     */ this.once;
+        /***
+     * @type {FeatureOnSignature<void>}
+     */ this.un;
+        /**
+     * @private
+     * @type {number|string|undefined}
+     */ this.id_ = undefined;
+        /**
+     * @type {string}
+     * @private
+     */ this.geometryName_ = "geometry";
+        /**
+     * User provided style.
+     * @private
+     * @type {import("./style/Style.js").StyleLike}
+     */ this.style_ = null;
+        /**
+     * @private
+     * @type {import("./style/Style.js").StyleFunction|undefined}
+     */ this.styleFunction_ = undefined;
+        /**
+     * @private
+     * @type {?import("./events.js").EventsKey}
+     */ this.geometryChangeKey_ = null;
+        this.addChangeListener(this.geometryName_, this.handleGeometryChanged_);
+        if (geometryOrProperties) {
+            if (typeof /** @type {?} */ geometryOrProperties.getSimplifiedGeometry === "function") {
+                const geometry = /** @type {Geometry} */ geometryOrProperties;
+                this.setGeometry(geometry);
+            } else {
+                /** @type {Object<string, *>} */ const properties = geometryOrProperties;
+                this.setProperties(properties);
+            }
+        }
+    }
+    /**
+   * Clone this feature. If the original feature has a geometry it
+   * is also cloned. The feature id is not set in the clone.
+   * @return {Feature<Geometry>} The clone.
+   * @api
+   */ clone() {
+        const clone = /** @type {Feature<Geometry>} */ new $488541e07685eb37$var$Feature(this.hasProperties() ? this.getProperties() : null);
+        clone.setGeometryName(this.getGeometryName());
+        const geometry = this.getGeometry();
+        if (geometry) clone.setGeometry(/** @type {Geometry} */ geometry.clone());
+        const style = this.getStyle();
+        if (style) clone.setStyle(style);
+        return clone;
+    }
+    /**
+   * Get the feature's default geometry.  A feature may have any number of named
+   * geometries.  The "default" geometry (the one that is rendered by default) is
+   * set when calling {@link module:ol/Feature~Feature#setGeometry}.
+   * @return {Geometry|undefined} The default geometry for the feature.
+   * @api
+   * @observable
+   */ getGeometry() {
+        return /** @type {Geometry|undefined} */ this.get(this.geometryName_);
+    }
+    /**
+   * Get the feature identifier.  This is a stable identifier for the feature and
+   * is either set when reading data from a remote source or set explicitly by
+   * calling {@link module:ol/Feature~Feature#setId}.
+   * @return {number|string|undefined} Id.
+   * @api
+   */ getId() {
+        return this.id_;
+    }
+    /**
+   * Get the name of the feature's default geometry.  By default, the default
+   * geometry is named `geometry`.
+   * @return {string} Get the property name associated with the default geometry
+   *     for this feature.
+   * @api
+   */ getGeometryName() {
+        return this.geometryName_;
+    }
+    /**
+   * Get the feature's style. Will return what was provided to the
+   * {@link module:ol/Feature~Feature#setStyle} method.
+   * @return {import("./style/Style.js").StyleLike|undefined} The feature style.
+   * @api
+   */ getStyle() {
+        return this.style_;
+    }
+    /**
+   * Get the feature's style function.
+   * @return {import("./style/Style.js").StyleFunction|undefined} Return a function
+   * representing the current style of this feature.
+   * @api
+   */ getStyleFunction() {
+        return this.styleFunction_;
+    }
+    /**
+   * @private
+   */ handleGeometryChange_() {
+        this.changed();
+    }
+    /**
+   * @private
+   */ handleGeometryChanged_() {
+        if (this.geometryChangeKey_) {
+            (0, $776f68d2a754760b$export$b0a21c8b3c1c921)(this.geometryChangeKey_);
+            this.geometryChangeKey_ = null;
+        }
+        const geometry = this.getGeometry();
+        if (geometry) this.geometryChangeKey_ = (0, $776f68d2a754760b$export$63174c828edd6ff8)(geometry, (0, $f13d17e3c190470c$export$2e2bcd8739ae039).CHANGE, this.handleGeometryChange_, this);
+        this.changed();
+    }
+    /**
+   * Set the default geometry for the feature.  This will update the property
+   * with the name returned by {@link module:ol/Feature~Feature#getGeometryName}.
+   * @param {Geometry|undefined} geometry The new geometry.
+   * @api
+   * @observable
+   */ setGeometry(geometry) {
+        this.set(this.geometryName_, geometry);
+    }
+    /**
+   * Set the style for the feature to override the layer style.  This can be a
+   * single style object, an array of styles, or a function that takes a
+   * resolution and returns an array of styles. To unset the feature style, call
+   * `setStyle()` without arguments or a falsey value.
+   * @param {import("./style/Style.js").StyleLike} [style] Style for this feature.
+   * @api
+   * @fires module:ol/events/Event~BaseEvent#event:change
+   */ setStyle(style) {
+        this.style_ = style;
+        this.styleFunction_ = !style ? undefined : $488541e07685eb37$export$bb06ddfd5d66e02e(style);
+        this.changed();
+    }
+    /**
+   * Set the feature id.  The feature id is considered stable and may be used when
+   * requesting features or comparing identifiers returned from a remote source.
+   * The feature id can be used with the
+   * {@link module:ol/source/Vector~VectorSource#getFeatureById} method.
+   * @param {number|string|undefined} id The feature id.
+   * @api
+   * @fires module:ol/events/Event~BaseEvent#event:change
+   */ setId(id) {
+        this.id_ = id;
+        this.changed();
+    }
+    /**
+   * Set the property name to be used when getting the feature's default geometry.
+   * When calling {@link module:ol/Feature~Feature#getGeometry}, the value of the property with
+   * this name will be returned.
+   * @param {string} name The property name of the default geometry.
+   * @api
+   */ setGeometryName(name) {
+        this.removeChangeListener(this.geometryName_, this.handleGeometryChanged_);
+        this.geometryName_ = name;
+        this.addChangeListener(this.geometryName_, this.handleGeometryChanged_);
+        this.handleGeometryChanged_();
+    }
+}
+function $488541e07685eb37$export$bb06ddfd5d66e02e(obj) {
+    if (typeof obj === "function") return obj;
+    /**
+   * @type {Array<import("./style/Style.js").default>}
+   */ let styles;
+    if (Array.isArray(obj)) styles = obj;
+    else {
+        (0, $1e19c69d18d8b77c$export$a7a9523472993e97)(typeof /** @type {?} */ obj.getZIndex === "function", 41); // Expected an `import("./style/Style.js").Style` or an array of `import("./style/Style.js").Style`
+        const style = /** @type {import("./style/Style.js").default} */ obj;
+        styles = [
+            style
+        ];
+    }
+    return function() {
+        return styles;
+    };
+}
+var $488541e07685eb37$export$2e2bcd8739ae039 = $488541e07685eb37$var$Feature;
+
+/**
+ * @module ol/Map
+ */ 
+/**
+ * @module ol/Collection
+ */ 
 
 /**
  * @module ol/CollectionEventType
@@ -3950,13 +4209,6 @@ const $253e11c6a01eb5bc$export$f751ce96c6c4e4fc = function() {
     return passive;
 }();
 
-
-/**
- * @module ol/asserts
- */ 
-function $1e19c69d18d8b77c$export$a7a9523472993e97(assertion, errorCode) {
-    if (!assertion) throw new (0, $fc1e13bda45b0626$export$2e2bcd8739ae039)(errorCode);
-}
 
 
 /**
@@ -15629,258 +15881,6 @@ function $3db00eb0a4716cab$export$a71a825ff42fb8e1(size, dest) {
     };
 }
 var $905d64a7b91bb632$export$2e2bcd8739ae039 = $905d64a7b91bb632$var$Map;
-
-/**
- * @module ol/Feature
- */ 
-
-
-
-/**
- * @typedef {typeof Feature|typeof import("./render/Feature.js").default} FeatureClass
- */ /**
- * @typedef {Feature|import("./render/Feature.js").default} FeatureLike
- */ /***
- * @template Return
- * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
- *   import("./Observable").OnSignature<import("./ObjectEventType").Types|'change:geometry', import("./Object").ObjectEvent, Return> &
- *   import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|import("./ObjectEventType").Types
- *     |'change:geometry', Return>} FeatureOnSignature
- */ /***
- * @template Geometry
- * @typedef {Object<string, *> & { geometry?: Geometry }} ObjectWithGeometry
- */ /**
- * @classdesc
- * A vector object for geographic features with a geometry and other
- * attribute properties, similar to the features in vector file formats like
- * GeoJSON.
- *
- * Features can be styled individually with `setStyle`; otherwise they use the
- * style of their vector layer.
- *
- * Note that attribute properties are set as {@link module:ol/Object~BaseObject} properties on
- * the feature object, so they are observable, and have get/set accessors.
- *
- * Typically, a feature has a single geometry property. You can set the
- * geometry using the `setGeometry` method and get it with `getGeometry`.
- * It is possible to store more than one geometry on a feature using attribute
- * properties. By default, the geometry used for rendering is identified by
- * the property name `geometry`. If you want to use another geometry property
- * for rendering, use the `setGeometryName` method to change the attribute
- * property associated with the geometry for the feature.  For example:
- *
- * ```js
- *
- * import Feature from 'ol/Feature.js';
- * import Polygon from 'ol/geom/Polygon.js';
- * import Point from 'ol/geom/Point.js';
- *
- * const feature = new Feature({
- *   geometry: new Polygon(polyCoords),
- *   labelPoint: new Point(labelCoords),
- *   name: 'My Polygon',
- * });
- *
- * // get the polygon geometry
- * const poly = feature.getGeometry();
- *
- * // Render the feature as a point using the coordinates from labelPoint
- * feature.setGeometryName('labelPoint');
- *
- * // get the point geometry
- * const point = feature.getGeometry();
- * ```
- *
- * @api
- * @template {import("./geom/Geometry.js").default} [Geometry=import("./geom/Geometry.js").default]
- */ class $488541e07685eb37$var$Feature extends (0, $d6cd7f1b627d5e92$export$2e2bcd8739ae039) {
-    /**
-   * @param {Geometry|ObjectWithGeometry<Geometry>} [geometryOrProperties]
-   *     You may pass a Geometry object directly, or an object literal containing
-   *     properties. If you pass an object literal, you may include a Geometry
-   *     associated with a `geometry` key.
-   */ constructor(geometryOrProperties){
-        super();
-        /***
-     * @type {FeatureOnSignature<import("./events").EventsKey>}
-     */ this.on;
-        /***
-     * @type {FeatureOnSignature<import("./events").EventsKey>}
-     */ this.once;
-        /***
-     * @type {FeatureOnSignature<void>}
-     */ this.un;
-        /**
-     * @private
-     * @type {number|string|undefined}
-     */ this.id_ = undefined;
-        /**
-     * @type {string}
-     * @private
-     */ this.geometryName_ = "geometry";
-        /**
-     * User provided style.
-     * @private
-     * @type {import("./style/Style.js").StyleLike}
-     */ this.style_ = null;
-        /**
-     * @private
-     * @type {import("./style/Style.js").StyleFunction|undefined}
-     */ this.styleFunction_ = undefined;
-        /**
-     * @private
-     * @type {?import("./events.js").EventsKey}
-     */ this.geometryChangeKey_ = null;
-        this.addChangeListener(this.geometryName_, this.handleGeometryChanged_);
-        if (geometryOrProperties) {
-            if (typeof /** @type {?} */ geometryOrProperties.getSimplifiedGeometry === "function") {
-                const geometry = /** @type {Geometry} */ geometryOrProperties;
-                this.setGeometry(geometry);
-            } else {
-                /** @type {Object<string, *>} */ const properties = geometryOrProperties;
-                this.setProperties(properties);
-            }
-        }
-    }
-    /**
-   * Clone this feature. If the original feature has a geometry it
-   * is also cloned. The feature id is not set in the clone.
-   * @return {Feature<Geometry>} The clone.
-   * @api
-   */ clone() {
-        const clone = /** @type {Feature<Geometry>} */ new $488541e07685eb37$var$Feature(this.hasProperties() ? this.getProperties() : null);
-        clone.setGeometryName(this.getGeometryName());
-        const geometry = this.getGeometry();
-        if (geometry) clone.setGeometry(/** @type {Geometry} */ geometry.clone());
-        const style = this.getStyle();
-        if (style) clone.setStyle(style);
-        return clone;
-    }
-    /**
-   * Get the feature's default geometry.  A feature may have any number of named
-   * geometries.  The "default" geometry (the one that is rendered by default) is
-   * set when calling {@link module:ol/Feature~Feature#setGeometry}.
-   * @return {Geometry|undefined} The default geometry for the feature.
-   * @api
-   * @observable
-   */ getGeometry() {
-        return /** @type {Geometry|undefined} */ this.get(this.geometryName_);
-    }
-    /**
-   * Get the feature identifier.  This is a stable identifier for the feature and
-   * is either set when reading data from a remote source or set explicitly by
-   * calling {@link module:ol/Feature~Feature#setId}.
-   * @return {number|string|undefined} Id.
-   * @api
-   */ getId() {
-        return this.id_;
-    }
-    /**
-   * Get the name of the feature's default geometry.  By default, the default
-   * geometry is named `geometry`.
-   * @return {string} Get the property name associated with the default geometry
-   *     for this feature.
-   * @api
-   */ getGeometryName() {
-        return this.geometryName_;
-    }
-    /**
-   * Get the feature's style. Will return what was provided to the
-   * {@link module:ol/Feature~Feature#setStyle} method.
-   * @return {import("./style/Style.js").StyleLike|undefined} The feature style.
-   * @api
-   */ getStyle() {
-        return this.style_;
-    }
-    /**
-   * Get the feature's style function.
-   * @return {import("./style/Style.js").StyleFunction|undefined} Return a function
-   * representing the current style of this feature.
-   * @api
-   */ getStyleFunction() {
-        return this.styleFunction_;
-    }
-    /**
-   * @private
-   */ handleGeometryChange_() {
-        this.changed();
-    }
-    /**
-   * @private
-   */ handleGeometryChanged_() {
-        if (this.geometryChangeKey_) {
-            (0, $776f68d2a754760b$export$b0a21c8b3c1c921)(this.geometryChangeKey_);
-            this.geometryChangeKey_ = null;
-        }
-        const geometry = this.getGeometry();
-        if (geometry) this.geometryChangeKey_ = (0, $776f68d2a754760b$export$63174c828edd6ff8)(geometry, (0, $f13d17e3c190470c$export$2e2bcd8739ae039).CHANGE, this.handleGeometryChange_, this);
-        this.changed();
-    }
-    /**
-   * Set the default geometry for the feature.  This will update the property
-   * with the name returned by {@link module:ol/Feature~Feature#getGeometryName}.
-   * @param {Geometry|undefined} geometry The new geometry.
-   * @api
-   * @observable
-   */ setGeometry(geometry) {
-        this.set(this.geometryName_, geometry);
-    }
-    /**
-   * Set the style for the feature to override the layer style.  This can be a
-   * single style object, an array of styles, or a function that takes a
-   * resolution and returns an array of styles. To unset the feature style, call
-   * `setStyle()` without arguments or a falsey value.
-   * @param {import("./style/Style.js").StyleLike} [style] Style for this feature.
-   * @api
-   * @fires module:ol/events/Event~BaseEvent#event:change
-   */ setStyle(style) {
-        this.style_ = style;
-        this.styleFunction_ = !style ? undefined : $488541e07685eb37$export$bb06ddfd5d66e02e(style);
-        this.changed();
-    }
-    /**
-   * Set the feature id.  The feature id is considered stable and may be used when
-   * requesting features or comparing identifiers returned from a remote source.
-   * The feature id can be used with the
-   * {@link module:ol/source/Vector~VectorSource#getFeatureById} method.
-   * @param {number|string|undefined} id The feature id.
-   * @api
-   * @fires module:ol/events/Event~BaseEvent#event:change
-   */ setId(id) {
-        this.id_ = id;
-        this.changed();
-    }
-    /**
-   * Set the property name to be used when getting the feature's default geometry.
-   * When calling {@link module:ol/Feature~Feature#getGeometry}, the value of the property with
-   * this name will be returned.
-   * @param {string} name The property name of the default geometry.
-   * @api
-   */ setGeometryName(name) {
-        this.removeChangeListener(this.geometryName_, this.handleGeometryChanged_);
-        this.geometryName_ = name;
-        this.addChangeListener(this.geometryName_, this.handleGeometryChanged_);
-        this.handleGeometryChanged_();
-    }
-}
-function $488541e07685eb37$export$bb06ddfd5d66e02e(obj) {
-    if (typeof obj === "function") return obj;
-    /**
-   * @type {Array<import("./style/Style.js").default>}
-   */ let styles;
-    if (Array.isArray(obj)) styles = obj;
-    else {
-        (0, $1e19c69d18d8b77c$export$a7a9523472993e97)(typeof /** @type {?} */ obj.getZIndex === "function", 41); // Expected an `import("./style/Style.js").Style` or an array of `import("./style/Style.js").Style`
-        const style = /** @type {import("./style/Style.js").default} */ obj;
-        styles = [
-            style
-        ];
-    }
-    return function() {
-        return styles;
-    };
-}
-var $488541e07685eb37$export$2e2bcd8739ae039 = $488541e07685eb37$var$Feature;
 
 
 var $cf6a3c38f3310fd7$exports = {};
@@ -42268,7 +42268,7 @@ class $ab189090502049a5$var$FrameControl extends (0, $073a42a03e127bc6$export$2e
         slider.type = "range";
         const label = document.createElement("h3");
         const toggle = document.createElement("img");
-        toggle.src = new URL("pause.057be8f8.svg", import.meta.url).toString();
+        toggle.src = new URL("pause.svg", import.meta.url).toString();
         const element = document.createElement("div");
         element.className = "frame-selector ol-unselectable ol-control";
         element.appendChild(label);
@@ -42308,12 +42308,12 @@ class $ab189090502049a5$var$FrameControl extends (0, $073a42a03e127bc6$export$2e
     }
     startAutoplay() {
         this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), 500);
-        this.toggle.src = new URL("pause.057be8f8.svg", import.meta.url).toString();
+        this.toggle.src = new URL("pause.svg", import.meta.url).toString();
     }
     stopAutoplay() {
         clearInterval(this.autoplayIntervalId);
         this.autoplayIntervalId = null;
-        this.toggle.src = new URL("play.193a7424.svg", import.meta.url).toString();
+        this.toggle.src = new URL("play.svg", import.meta.url).toString();
     }
     toggleAutoplay() {
         if (this.autoplayIntervalId !== null) this.stopAutoplay();
@@ -42382,6 +42382,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
             this.map.dispose();
             this.map = undefined;
         }
+        if (this.interval) clearInterval(this.interval);
         this._loaded = false;
     /*
         if (this._resizeObserver) {
@@ -42436,7 +42437,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
                     ],
                     anchorXUnits: "fraction",
                     anchorYUnits: "pixels",
-                    src: new URL("home.c0438194.png", import.meta.url).toString(),
+                    src: new URL("home.png", import.meta.url).toString(),
                     scale: 0.1
                 })
             });
@@ -42454,6 +42455,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
             // Step 5: Add the vector layer to the map
             this.map.addLayer(vectorLayer);
             this.updateData(true);
+            this.interval = setInterval(()=>this.updateData(), 900000); // Update every 15 minutes
             this._loaded = true;
         } finally{
             this._loading = false;
@@ -42534,11 +42536,8 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         `
         ];
     }
-    _draw() {
-        console.log("draw");
-    }
+    _draw() {}
     updateData(first = false) {
-        console.log("update");
         const start = new Date();
         const endDate = new Date(start.getTime() + 10800000);
         fetch(`https://api.brightsky.dev/radar?tz=Europe/Berlin&lat=${this.lat}&lon=${this.lon}&distance=100000&date=${start.toISOString()}&last_date=${endDate.toISOString()}`).then((resp)=>resp.json()).then((data)=>{
