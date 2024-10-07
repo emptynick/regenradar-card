@@ -1,6 +1,6 @@
 {
     "name": "Regenradar Card",
     "render_readme": true,
-    "filename": "dist/card.js",
+    "filename": "card.js",
     "content_in_root": false
   }
