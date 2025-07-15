@@ -294,7 +294,7 @@ export class RegenRadarMap extends ReactiveElement {
         let autoFitRequired = false;
         const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
 
-        if (changedProps.has('_loaded') || changedProps.has('latitude') || changedProps.has('longitude')) {
+        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom')) {
             this._draw();
             autoFitRequired = true;
         }

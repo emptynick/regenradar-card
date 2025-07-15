@@ -48865,7 +48865,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         console.log('update', changedProps);
         let autoFitRequired = false;
         const oldHass = changedProps.get('hass');
-        if (changedProps.has('_loaded') || changedProps.has('latitude') || changedProps.has('longitude')) {
+        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom')) {
             this._draw();
             autoFitRequired = true;
         }
