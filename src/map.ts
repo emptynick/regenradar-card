@@ -211,12 +211,29 @@ export class RegenRadarMap extends ReactiveElement {
             proj4.defs(gridProjection, gridProjStr);
             register(proj4);
 
+            const tile = new Tile({
+                source: new OSM(),
+            });
+
+            tile.on('prerender', (evt) => {
+                if (evt.context) {
+                    const context = evt.context as CanvasRenderingContext2D;
+                    context.filter = 'grayscale(80%) invert(100%) ';
+                    context.globalCompositeOperation = 'source-over';
+                }
+                });
+
+            tile.on('postrender', (evt) => {
+                if (evt.context) {
+                    const context = evt.context as CanvasRenderingContext2D;
+                    context.filter = 'none';
+                }
+            });
+
             this.map = new Map({
                 target: map,
                 layers: [
-                    new Tile({
-                        source: new OSM(),
-                    }),
+                    tile,
                     imageLayer,
                 ],
                 view: new View({
