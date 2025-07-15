@@ -258,7 +258,7 @@ export class RegenRadarMap extends ReactiveElement {
                         'home.svg',
                         import.meta.url
                     ).toString(), // Path to the icon image
-                    scale: 0.1,
+                    scale: 0.5,
                 }),
             });
             marker.setStyle(iconStyle);

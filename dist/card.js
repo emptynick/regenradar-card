@@ -48836,7 +48836,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
                     anchorXUnits: 'fraction',
                     anchorYUnits: 'pixels',
                     src: new URL("home.svg", import.meta.url).toString(),
-                    scale: 0.1
+                    scale: 0.5
                 })
             });
             marker.setStyle(iconStyle);
