@@ -49077,16 +49077,22 @@ class $d067581fc0d59830$export$ea0cbdc8711f2274 extends (0, $ab210b2da7b39b9d$ex
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
             <form class="table">
                 <div class="row">
-                    <label class="label cell" for="header">Latitude:</label>
+                    <label class="label cell" for="lat">Latitude:</label>
                     <input
                         @change="${this.handleChangedEvent}"
-                        class="value cell" id="lat" value="${this._config.lat}"></input>
+                        class="value cell" id="lat" value="${this._config.lat}">
                 </div>
                 <div class="row">
-                    <label class="label cell" for="entity">Longitude:</label>
+                    <label class="label cell" for="lon">Longitude:</label>
                     <input
                         @change="${this.handleChangedEvent}"
-                        class="value cell" id="lon" value="${this._config.lon}"></input>
+                        class="value cell" id="lon" value="${this._config.lon}">
+                </div>
+                <div class="row">
+                    <label class="label cell" for="zoom">Zoom:</label>
+                    <input
+                        @change="${this.handleChangedEvent}"
+                        class="value cell" id="zoom" value="${this._config.zoom}" type="number">
                 </div>
             </form>
         `;
@@ -49097,6 +49103,7 @@ class $d067581fc0d59830$export$ea0cbdc8711f2274 extends (0, $ab210b2da7b39b9d$ex
         const newConfig = Object.assign({}, this._config);
         if (target.id == "lat") newConfig.lat = parseFloat(target.value);
         else if (target.id == "lon") newConfig.lon = parseFloat(target.value);
+        else if (target.id == "zoom") newConfig.zoom = parseInt(target.value);
         const messageEvent = new CustomEvent("config-changed", {
             detail: {
                 config: newConfig

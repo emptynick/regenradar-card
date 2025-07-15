@@ -25,16 +25,22 @@ export class RegenradarEditor extends LitElement {
     return html`
             <form class="table">
                 <div class="row">
-                    <label class="label cell" for="header">Latitude:</label>
+                    <label class="label cell" for="lat">Latitude:</label>
                     <input
                         @change="${this.handleChangedEvent}"
-                        class="value cell" id="lat" value="${this._config.lat}"></input>
+                        class="value cell" id="lat" value="${this._config.lat}">
                 </div>
                 <div class="row">
-                    <label class="label cell" for="entity">Longitude:</label>
+                    <label class="label cell" for="lon">Longitude:</label>
                     <input
                         @change="${this.handleChangedEvent}"
-                        class="value cell" id="lon" value="${this._config.lon}"></input>
+                        class="value cell" id="lon" value="${this._config.lon}">
+                </div>
+                <div class="row">
+                    <label class="label cell" for="zoom">Zoom:</label>
+                    <input
+                        @change="${this.handleChangedEvent}"
+                        class="value cell" id="zoom" value="${this._config.zoom}" type="number">
                 </div>
             </form>
         `;
@@ -48,6 +54,8 @@ export class RegenradarEditor extends LitElement {
       newConfig.lat = parseFloat(target.value);
     } else if (target.id == "lon") {
       newConfig.lon = parseFloat(target.value);
+    } else if (target.id == "zoom") {
+      newConfig.zoom = parseInt(target.value);
     }
     const messageEvent = new CustomEvent("config-changed", {
       detail: { config: newConfig },
