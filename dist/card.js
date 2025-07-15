@@ -48756,7 +48756,7 @@ function $ab189090502049a5$var$makeSource(record, width, height, projection, ext
 class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$export$c7c07a37856565d) {
     connectedCallback() {
         super.connectedCallback();
-        console.log('connected', this.lat, this.lon, this.zoom);
+        console.log('connected', this.lat, this.lon, this.zoom, this.future);
         this._loadMap();
     /*
         this._attachObserver();*/ }
@@ -48865,7 +48865,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         console.log('update', changedProps);
         let autoFitRequired = false;
         const oldHass = changedProps.get('hass');
-        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom')) {
+        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('future')) {
             this._draw();
             autoFitRequired = true;
         }
@@ -48937,7 +48937,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
     _draw() {}
     updateData(first = false) {
         const start = new Date();
-        const endDate = new Date(start.getTime() + 10800000);
+        const endDate = new Date(start.getTime() + this.future * 60000);
         fetch(`https://api.brightsky.dev/radar?tz=Europe/Berlin&lat=${this.lat}&lon=${this.lon}&distance=100000&date=${start.toISOString()}&last_date=${endDate.toISOString()}`).then((resp)=>resp.json()).then((data)=>{
             const topLeft = (0, $983289ae1d13cd2a$export$51186ad6e864892a)(data.geometry.coordinates[0], 'EPSG:4326', 'DE1200');
             const bottomRight = (0, $983289ae1d13cd2a$export$51186ad6e864892a)(data.geometry.coordinates[2], 'EPSG:4326', 'DE1200');
@@ -48959,7 +48959,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         });
     }
     constructor(...args){
-        super(...args), this._loaded = false, this.lat = 0, this.lon = 0, this.zoom = 9, this._loading = false;
+        super(...args), this._loaded = false, this.lat = 0, this.lon = 0, this.zoom = 9, this.future = 60, this._loading = false;
     }
 }
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
@@ -48982,6 +48982,11 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         type: Number
     })
 ], $ab189090502049a5$export$b531eec335465587.prototype, "zoom", void 0);
+(0, $24c52f343453d62d$export$29e00dfd3077644b)([
+    (0, $9cd908ed2625c047$export$d541bacb2bda4494)({
+        type: Number
+    })
+], $ab189090502049a5$export$b531eec335465587.prototype, "future", void 0);
 $ab189090502049a5$export$b531eec335465587 = (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $14742f68afc766d6$export$da64fc29f17f9d0e)('regenradar-card-map')
 ], $ab189090502049a5$export$b531eec335465587);
@@ -48993,6 +48998,7 @@ class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$ex
         this._lat = config.lat;
         this._lon = config.lon;
         this._zoom = config.zoom;
+        this._future = config.future;
         // call set hass() to immediately adjust to a changed entity
         // while editing the entity in the card editor
         if (this._hass) this.hass = this._hass;
@@ -49012,7 +49018,8 @@ class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$ex
           <regenradar-card-map
               .lat=${this._lat} 
               .lon=${this._lon}
-              .zoom=${this._zoom}>
+              .zoom=${this._zoom}
+              .future=${this._future}>
             
           </regenradar-card-map>
         </div>
@@ -49033,7 +49040,8 @@ class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$ex
         return {
             lat: 1.123,
             lon: 2.345,
-            zoom: 9
+            zoom: 9,
+            future: 60
         };
     }
 }
@@ -49096,6 +49104,12 @@ class $d067581fc0d59830$export$ea0cbdc8711f2274 extends (0, $ab210b2da7b39b9d$ex
                         @change="${this.handleChangedEvent}"
                         class="value cell" id="zoom" value="${this._config.zoom}" type="number">
                 </div>
+                <div class="row">
+                    <label class="label cell" for="future">Forecast time in minutes:</label>
+                    <input
+                        @change="${this.handleChangedEvent}"
+                        class="value cell" id="future" value="${this._config.future}" type="number" min="0" max="300">
+                </div>
             </form>
         `;
     }
@@ -49106,6 +49120,7 @@ class $d067581fc0d59830$export$ea0cbdc8711f2274 extends (0, $ab210b2da7b39b9d$ex
         if (target.id == "lat") newConfig.lat = parseFloat(target.value);
         else if (target.id == "lon") newConfig.lon = parseFloat(target.value);
         else if (target.id == "zoom") newConfig.zoom = parseInt(target.value);
+        else if (target.id == "future") newConfig.future = parseInt(target.value);
         const messageEvent = new CustomEvent("config-changed", {
             detail: {
                 config: newConfig

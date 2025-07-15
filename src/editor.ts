@@ -42,6 +42,12 @@ export class RegenradarEditor extends LitElement {
                         @change="${this.handleChangedEvent}"
                         class="value cell" id="zoom" value="${this._config.zoom}" type="number">
                 </div>
+                <div class="row">
+                    <label class="label cell" for="future">Forecast time in minutes:</label>
+                    <input
+                        @change="${this.handleChangedEvent}"
+                        class="value cell" id="future" value="${this._config.future}" type="number" min="0" max="300">
+                </div>
             </form>
         `;
   }
@@ -56,6 +62,8 @@ export class RegenradarEditor extends LitElement {
       newConfig.lon = parseFloat(target.value);
     } else if (target.id == "zoom") {
       newConfig.zoom = parseInt(target.value);
+    } else if (target.id == "future") {
+      newConfig.future = parseInt(target.value);
     }
     const messageEvent = new CustomEvent("config-changed", {
       detail: { config: newConfig },
