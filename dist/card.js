@@ -48790,14 +48790,14 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
                 source: new (0, $25838c5bce8055ee$export$2e2bcd8739ae039)()
             });
             tile.on('prerender', (evt)=>{
-                if (evt.context) {
+                if (evt.context && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     const context = evt.context;
                     context.filter = 'grayscale(80%) invert(100%) ';
                     context.globalCompositeOperation = 'source-over';
                 }
             });
             tile.on('postrender', (evt)=>{
-                if (evt.context) {
+                if (evt.context && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     const context = evt.context;
                     context.filter = 'none';
                 }

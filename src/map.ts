@@ -216,7 +216,7 @@ export class RegenRadarMap extends ReactiveElement {
             });
 
             tile.on('prerender', (evt) => {
-                if (evt.context) {
+                if (evt.context && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     const context = evt.context as CanvasRenderingContext2D;
                     context.filter = 'grayscale(80%) invert(100%) ';
                     context.globalCompositeOperation = 'source-over';
@@ -224,7 +224,7 @@ export class RegenRadarMap extends ReactiveElement {
                 });
 
             tile.on('postrender', (evt) => {
-                if (evt.context) {
+                if (evt.context && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     const context = evt.context as CanvasRenderingContext2D;
                     context.filter = 'none';
                 }
