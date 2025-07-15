@@ -254,7 +254,7 @@ export class RegenRadarMap extends ReactiveElement {
                     anchorXUnits: 'fraction',
                     anchorYUnits: 'pixels',
                     src: new URL(
-                        'home.png',
+                        'home.svg',
                         import.meta.url
                     ).toString(), // Path to the icon image
                     scale: 0.1,
