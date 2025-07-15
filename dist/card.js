@@ -48992,6 +48992,7 @@ class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$ex
         this._header = config.header === "" ? (0, $f58f44579a4747ac$export$45b790e32b2810ee) : config.header;
         this._lat = config.lat;
         this._lon = config.lon;
+        this._zoom = config.zoom;
         // call set hass() to immediately adjust to a changed entity
         // while editing the entity in the card editor
         if (this._hass) this.hass = this._hass;
@@ -49010,7 +49011,8 @@ class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$ex
         <div class="card-content">
           <regenradar-card-map
               .lat=${this._lat} 
-              .lon=${this._lon}>
+              .lon=${this._lon}
+              .zoom=${this._zoom}>
             
           </regenradar-card-map>
         </div>

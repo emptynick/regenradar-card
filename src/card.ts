@@ -28,10 +28,12 @@ export class ToggleCardTypeScript extends LitElement {
   // lifecycle interface
   private _lat: number;
   private _lon: number;
+  private _zoom: number;
   setConfig(config: Config) {
     this._header = config.header === "" ? nothing : config.header;
     this._lat = config.lat;
     this._lon = config.lon;
+    this._zoom = config.zoom;
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
     if (this._hass) {
@@ -55,7 +57,8 @@ export class ToggleCardTypeScript extends LitElement {
         <div class="card-content">
           <regenradar-card-map
               .lat=${this._lat} 
-              .lon=${this._lon}>
+              .lon=${this._lon}
+              .zoom=${this._zoom}>
             
           </regenradar-card-map>
         </div>
