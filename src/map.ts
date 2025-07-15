@@ -162,7 +162,7 @@ export class RegenRadarMap extends ReactiveElement {
     @property({attribute: false, type: Number}) public lat = 0;
     @property({attribute: false, type: Number}) public lon = 0;
     @property({type: Number}) public zoom = 9;
-    @property({type: Number}) public future = 60;
+    @property({type: Number}) public forecast = 60;
 
     private _loading = false;
     private map: Map;
@@ -171,7 +171,7 @@ export class RegenRadarMap extends ReactiveElement {
 
     public connectedCallback(): void {
         super.connectedCallback();
-        console.log('connected', this.lat, this.lon, this.zoom, this.future);
+        console.log('connected', this.lat, this.lon, this.zoom, this.forecast);
         this._loadMap();
         /*
         this._attachObserver();*/
@@ -295,7 +295,7 @@ export class RegenRadarMap extends ReactiveElement {
         let autoFitRequired = false;
         const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
 
-        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('future')) {
+        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('forecast')) {
             this._draw();
             autoFitRequired = true;
         }
@@ -367,8 +367,10 @@ export class RegenRadarMap extends ReactiveElement {
     }
 
     private updateData(first=false): void {
-        const start = new Date();
-        const endDate = new Date(start.getTime() + (this.future * 60000));
+        const date = new Date();
+        var coeff = 1000 * 60 * 5;
+        const start = new Date(Math.round(date.getTime() / coeff) * coeff);
+        const endDate = new Date(start.getTime() + (this.forecast * 60000));
 
         fetch(
             `https://api.brightsky.dev/radar?tz=Europe/Berlin&lat=${this.lat}&lon=${this.lon}&distance=100000&date=${start.toISOString()}&last_date=${endDate.toISOString()}`

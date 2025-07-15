@@ -11,7 +11,7 @@ interface Config extends LovelaceCardConfig {
     lat: number;
     lon: number;
     zoom: number;
-    future: number;
+    forecast: number;
 }
 
 export class ToggleCardTypeScript extends LitElement {
@@ -29,13 +29,13 @@ export class ToggleCardTypeScript extends LitElement {
   private _lat: number;
   private _lon: number;
   private _zoom: number;
-  private _future: number;
+  private _forecast: number;
   setConfig(config: Config) {
     this._header = config.header === "" ? nothing : config.header;
     this._lat = config.lat;
     this._lon = config.lon;
     this._zoom = config.zoom;
-    this._future = config.future;
+    this._forecast = config.forecast;
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
     if (this._hass) {
@@ -61,7 +61,7 @@ export class ToggleCardTypeScript extends LitElement {
               .lat=${this._lat} 
               .lon=${this._lon}
               .zoom=${this._zoom}
-              .future=${this._future}>
+              .forecast=${this._forecast}>
             
           </regenradar-card-map>
         </div>
@@ -86,7 +86,7 @@ export class ToggleCardTypeScript extends LitElement {
       lat: 1.123,
       lon: 2.345,
       zoom: 9,
-      future: 60,
+      forecast: 60,
     };
   }
 }
