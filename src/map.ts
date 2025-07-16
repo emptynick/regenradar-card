@@ -265,13 +265,30 @@ export class RegenRadarMap extends ReactiveElement {
                     anchorXUnits: 'fraction',
                     anchorYUnits: 'pixels',
                     src: new URL(
-                        'home.svg',
+                        'home.png',
                         import.meta.url
                     ).toString(), // Path to the icon image
                     scale: 0.1,
                 }),
             });
-            marker.setStyle(iconStyle);
+            const darkIconStyle = new Style({
+                image: new Icon({
+                    anchor: [0.5, 46], // Anchor point in the icon
+                    anchorXUnits: 'fraction',
+                    anchorYUnits: 'pixels',
+                    src: new URL(
+                        'home_white.png',
+                        import.meta.url
+                    ).toString(), // Path to the icon image
+                    scale: 0.1,
+                }),
+            });
+
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                marker.setStyle(darkIconStyle);
+            } else {
+                marker.setStyle(iconStyle);
+            }
 
             // Step 3: Add the marker to a vector source
             const vectorSource = new Vector({

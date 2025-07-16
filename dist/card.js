@@ -48843,11 +48843,24 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
                     ],
                     anchorXUnits: 'fraction',
                     anchorYUnits: 'pixels',
-                    src: new URL("home.svg", import.meta.url).toString(),
+                    src: new URL("home.png", import.meta.url).toString(),
                     scale: 0.1
                 })
             });
-            marker.setStyle(iconStyle);
+            const darkIconStyle = new (0, $0e8e066c6965c811$export$2e2bcd8739ae039)({
+                image: new (0, $4dd3b6f7e2acb5b2$export$2e2bcd8739ae039)({
+                    anchor: [
+                        0.5,
+                        46
+                    ],
+                    anchorXUnits: 'fraction',
+                    anchorYUnits: 'pixels',
+                    src: new URL("home_white.png", import.meta.url).toString(),
+                    scale: 0.1
+                })
+            });
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) marker.setStyle(darkIconStyle);
+            else marker.setStyle(iconStyle);
             // Step 3: Add the marker to a vector source
             const vectorSource = new (0, $3b942f73954bd0a6$export$2e2bcd8739ae039)({
                 features: [
