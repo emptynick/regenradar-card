@@ -26,6 +26,7 @@ class FrameControl extends Control {
     private label: HTMLHeadingElement;
     private toggle: HTMLImageElement;
     private autoplayIntervalId: any;
+    private frameDelay: number = 500; // Delay in milliseconds for autoplay
 
     constructor(layer, frames=undefined) {
         const slider = document.createElement('input');
@@ -83,7 +84,7 @@ class FrameControl extends Control {
     }
 
     startAutoplay() {
-        this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), 500);
+        this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), this.frameDelay);
         this.toggle.src = new URL('pause.svg', import.meta.url).toString();
     }
 
@@ -97,6 +98,14 @@ class FrameControl extends Control {
         if (this.autoplayIntervalId !== null) {
             this.stopAutoplay();
         } else {
+            this.startAutoplay();
+        }
+    }
+
+    setAutoplayDelay(delay: number) {
+        this.frameDelay = delay;
+        if (this.autoplayIntervalId !== null) {
+            this.stopAutoplay();
             this.startAutoplay();
         }
     }
@@ -163,6 +172,7 @@ export class RegenRadarMap extends ReactiveElement {
     @property({attribute: false, type: Number}) public lon = 0;
     @property({type: Number}) public zoom = 9;
     @property({type: Number}) public forecast = 60;
+    @property({type: Number}) public autoplayDelay = 500;
 
     private _loading = false;
     private map: Map;
@@ -171,7 +181,7 @@ export class RegenRadarMap extends ReactiveElement {
 
     public connectedCallback(): void {
         super.connectedCallback();
-        console.log('connected', this.lat, this.lon, this.zoom, this.forecast);
+        console.log('connected', this.lat, this.lon, this.zoom, this.forecast, this.autoplayDelay);
         this._loadMap();
         /*
         this._attachObserver();*/
@@ -258,7 +268,7 @@ export class RegenRadarMap extends ReactiveElement {
                         'home.svg',
                         import.meta.url
                     ).toString(), // Path to the icon image
-                    scale: 0.5,
+                    scale: 0.1,
                 }),
             });
             marker.setStyle(iconStyle);
@@ -295,8 +305,11 @@ export class RegenRadarMap extends ReactiveElement {
         let autoFitRequired = false;
         const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
 
-        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('forecast')) {
+        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('forecast') || changedProps.has('autoplayDelay')) {
             this._draw();
+            if (changedProps.has('autoplayDelay')) {
+                this.frameControl.setAutoplayDelay(this.autoplayDelay);
+            }
             autoFitRequired = true;
         }
     }

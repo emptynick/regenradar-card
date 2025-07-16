@@ -48660,7 +48660,8 @@ class $ab189090502049a5$var$FrameControl extends (0, $073a42a03e127bc6$export$2e
         element.appendChild(slider);
         super({
             element: element
-        });
+        }), this.frameDelay = 500 // Delay in milliseconds for autoplay
+        ;
         this.frames = frames;
         this.layer = layer;
         this.slider = slider;
@@ -48691,7 +48692,7 @@ class $ab189090502049a5$var$FrameControl extends (0, $073a42a03e127bc6$export$2e
         this.setFrame();
     }
     startAutoplay() {
-        this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), 500);
+        this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), this.frameDelay);
         this.toggle.src = new URL("pause.svg", import.meta.url).toString();
     }
     stopAutoplay() {
@@ -48702,6 +48703,13 @@ class $ab189090502049a5$var$FrameControl extends (0, $073a42a03e127bc6$export$2e
     toggleAutoplay() {
         if (this.autoplayIntervalId !== null) this.stopAutoplay();
         else this.startAutoplay();
+    }
+    setAutoplayDelay(delay) {
+        this.frameDelay = delay;
+        if (this.autoplayIntervalId !== null) {
+            this.stopAutoplay();
+            this.startAutoplay();
+        }
     }
 }
 function $ab189090502049a5$var$decompress(raw) {
@@ -48756,7 +48764,7 @@ function $ab189090502049a5$var$makeSource(record, width, height, projection, ext
 class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$export$c7c07a37856565d) {
     connectedCallback() {
         super.connectedCallback();
-        console.log('connected', this.lat, this.lon, this.zoom, this.forecast);
+        console.log('connected', this.lat, this.lon, this.zoom, this.forecast, this.autoplayDelay);
         this._loadMap();
     /*
         this._attachObserver();*/ }
@@ -48836,7 +48844,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
                     anchorXUnits: 'fraction',
                     anchorYUnits: 'pixels',
                     src: new URL("home.svg", import.meta.url).toString(),
-                    scale: 0.5
+                    scale: 0.1
                 })
             });
             marker.setStyle(iconStyle);
@@ -48865,8 +48873,9 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         console.log('update', changedProps);
         let autoFitRequired = false;
         const oldHass = changedProps.get('hass');
-        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('forecast')) {
+        if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('forecast') || changedProps.has('autoplayDelay')) {
             this._draw();
+            if (changedProps.has('autoplayDelay')) this.frameControl.setAutoplayDelay(this.autoplayDelay);
             autoFitRequired = true;
         }
     }
@@ -48961,7 +48970,7 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         });
     }
     constructor(...args){
-        super(...args), this._loaded = false, this.lat = 0, this.lon = 0, this.zoom = 9, this.forecast = 60, this._loading = false;
+        super(...args), this._loaded = false, this.lat = 0, this.lon = 0, this.zoom = 9, this.forecast = 60, this.autoplayDelay = 500, this._loading = false;
     }
 }
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
@@ -48989,6 +48998,11 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         type: Number
     })
 ], $ab189090502049a5$export$b531eec335465587.prototype, "forecast", void 0);
+(0, $24c52f343453d62d$export$29e00dfd3077644b)([
+    (0, $9cd908ed2625c047$export$d541bacb2bda4494)({
+        type: Number
+    })
+], $ab189090502049a5$export$b531eec335465587.prototype, "autoplayDelay", void 0);
 $ab189090502049a5$export$b531eec335465587 = (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $14742f68afc766d6$export$da64fc29f17f9d0e)('regenradar-card-map')
 ], $ab189090502049a5$export$b531eec335465587);
@@ -49001,6 +49015,7 @@ class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$ex
         this._lon = config.lon;
         this._zoom = config.zoom;
         this._forecast = config.forecast;
+        this._autoplayDelay = config.autoplayDelay;
         // call set hass() to immediately adjust to a changed entity
         // while editing the entity in the card editor
         if (this._hass) this.hass = this._hass;
@@ -49021,7 +49036,8 @@ class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$ex
               .lat=${this._lat} 
               .lon=${this._lon}
               .zoom=${this._zoom}
-              .forecast=${this._forecast}>
+              .forecast=${this._forecast}
+              .autoplayDelay=${this._autoplayDelay}>
             
           </regenradar-card-map>
         </div>
@@ -49043,7 +49059,8 @@ class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$ex
             lat: 1.123,
             lon: 2.345,
             zoom: 9,
-            forecast: 60
+            forecast: 60,
+            autoplayDelay: 500
         };
     }
 }
@@ -49105,13 +49122,19 @@ class $d067581fc0d59830$export$ea0cbdc8711f2274 extends (0, $ab210b2da7b39b9d$ex
                     <input
                         @change="${this.handleChangedEvent}"
                         class="value cell" id="zoom" value="${this._config.zoom}" type="number">
-                </div>
-                <div class="row">
-                    <label class="label cell" for="forecast">Forecast time in minutes:</label>
-                    <input
-                        @change="${this.handleChangedEvent}"
-                        class="value cell" id="forecast" value="${this._config.forecast}" type="number" min="0" max="300">
-                </div>
+                  </div>
+                  <div class="row">
+                      <label class="label cell" for="forecast">Forecast time in minutes:</label>
+                      <input
+                          @change="${this.handleChangedEvent}"
+                          class="value cell" id="forecast" value="${this._config.forecast}" type="number" min="0" max="300">
+                  </div>
+                  <div class="row">
+                      <label class="label cell" for="autoplayDelay">Autoplay delay in milliseconds:</label>
+                      <input
+                          @change="${this.handleChangedEvent}"
+                          class="value cell" id="autoplayDelay" value="${this._config.autoplayDelay}" type="number" min="100">
+                  </div>
             </form>
         `;
     }
@@ -49123,6 +49146,7 @@ class $d067581fc0d59830$export$ea0cbdc8711f2274 extends (0, $ab210b2da7b39b9d$ex
         else if (target.id == "lon") newConfig.lon = parseFloat(target.value);
         else if (target.id == "zoom") newConfig.zoom = parseInt(target.value);
         else if (target.id == "forecast") newConfig.forecast = parseInt(target.value);
+        else if (target.id == "autoplayDelay") newConfig.autoplayDelay = parseInt(target.value);
         const messageEvent = new CustomEvent("config-changed", {
             detail: {
                 config: newConfig
