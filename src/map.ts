@@ -234,7 +234,7 @@ export class RegenRadarMap extends ReactiveElement {
                     context.filter = 'grayscale(80%) invert(100%) ';
                     context.globalCompositeOperation = 'source-over';
                 }
-                });
+            });
 
             tile.on('postrender', (evt) => {
                 if (evt.context && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
