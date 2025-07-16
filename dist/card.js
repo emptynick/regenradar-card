@@ -48706,12 +48706,9 @@ class $ab189090502049a5$var$FrameControl extends (0, $073a42a03e127bc6$export$2e
         else this.startAutoplay();
     }
     setAutoplayDelay(delay) {
-    /*console.log("Set autoplay delay from " + this.frameDelay + " to " + delay);
         this.frameDelay = delay;
-        if (this.autoplayIntervalId !== null) {
-            this.stopAutoplay();
-            this.startAutoplay();
-        }*/ }
+        if (this.autoplayIntervalId !== null) this.startAutoplay();
+    }
 }
 function $ab189090502049a5$var$decompress(raw) {
     // Get raw (zlib-encoded) bytes from base64 string
