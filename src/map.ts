@@ -84,9 +84,6 @@ class FrameControl extends Control {
     }
 
     startAutoplay() {
-        if (this.autoplayIntervalId !== null) {
-            this.stopAutoplay();
-        }
         this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), this.frameDelay);
         this.toggle.src = new URL('pause.svg', import.meta.url).toString();
     }
@@ -326,10 +323,11 @@ export class RegenRadarMap extends ReactiveElement {
         const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
 
         if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('forecast') || changedProps.has('autoplayDelay')) {
-            this._draw();
             if (changedProps.has('autoplayDelay')) {
                 this.frameControl.setAutoplayDelay(this.autoplayDelay);
             }
+
+            this._draw();
             autoFitRequired = true;
         }
     }

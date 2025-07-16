@@ -48692,7 +48692,6 @@ class $ab189090502049a5$var$FrameControl extends (0, $073a42a03e127bc6$export$2e
         this.setFrame();
     }
     startAutoplay() {
-        if (this.autoplayIntervalId !== null) this.stopAutoplay();
         this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), this.frameDelay);
         this.toggle.src = new URL("pause.svg", import.meta.url).toString();
     }
@@ -48888,8 +48887,8 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
         let autoFitRequired = false;
         const oldHass = changedProps.get('hass');
         if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('forecast') || changedProps.has('autoplayDelay')) {
-            this._draw();
             if (changedProps.has('autoplayDelay')) this.frameControl.setAutoplayDelay(this.autoplayDelay);
+            this._draw();
             autoFitRequired = true;
         }
     }
