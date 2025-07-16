@@ -48653,6 +48653,7 @@ class $ab189090502049a5$var$FrameControl extends (0, $073a42a03e127bc6$export$2e
         const label = document.createElement('h3');
         const toggle = document.createElement('img');
         toggle.src = new URL("pause.svg", import.meta.url).toString();
+        toggle.style.cursor = "pointer";
         const element = document.createElement('div');
         element.className = 'frame-selector ol-unselectable ol-control';
         element.appendChild(label);

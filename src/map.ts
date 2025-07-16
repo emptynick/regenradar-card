@@ -37,6 +37,7 @@ class FrameControl extends Control {
             'pause.svg',
             import.meta.url
         ).toString();
+        toggle.style.cursor = "pointer"; 
         const element = document.createElement('div');
         element.className = 'frame-selector ol-unselectable ol-control';
         element.appendChild(label);
