@@ -84,9 +84,8 @@ class FrameControl extends Control {
     }
 
     startAutoplay() {
-        console.log("Start autoplay");
         if (this.autoplayIntervalId !== null) {
-            console.log("Already running");
+            this.stopAutoplay();
         }
         this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), this.frameDelay);
         this.toggle.src = new URL('pause.svg', import.meta.url).toString();
