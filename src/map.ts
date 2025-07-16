@@ -84,6 +84,10 @@ class FrameControl extends Control {
     }
 
     startAutoplay() {
+        console.log("Start autoplay");
+        if (this.autoplayIntervalId !== null) {
+            console.log("Already running");
+        }
         this.autoplayIntervalId = setInterval(this.nextFrame.bind(this), this.frameDelay);
         this.toggle.src = new URL('pause.svg', import.meta.url).toString();
     }
@@ -319,16 +323,10 @@ export class RegenRadarMap extends ReactiveElement {
         }
         console.log('update', changedProps);
 
-        let autoFitRequired = false;
-        const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
-
         if (changedProps.has('_loaded') || changedProps.has('lat') || changedProps.has('lon') || changedProps.has('zoom') || changedProps.has('forecast') || changedProps.has('autoplayDelay')) {
             if (changedProps.has('autoplayDelay')) {
                 this.frameControl.setAutoplayDelay(this.autoplayDelay);
             }
-
-            this._draw();
-            autoFitRequired = true;
         }
     }
 
@@ -392,9 +390,6 @@ export class RegenRadarMap extends ReactiveElement {
                 margin-left: .25rem;
             }
         `];
-    }
-
-    private _draw() {
     }
 
     private updateData(first=false): void {
