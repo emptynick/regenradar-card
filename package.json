@@ -21,7 +21,7 @@
     "lit": "^3.3.1",
     "ol": "^10.6.1",
     "pako": "^2.1.0",
-    "proj4": "^2.19.6"
+    "proj4": "^2.19.7"
   },
   "@parcel/transformer-css": {
     "cssModules": true
