@@ -107,11 +107,12 @@ class FrameControl extends Control {
     }
 
     setAutoplayDelay(delay: number) {
+        /*console.log("Set autoplay delay from " + this.frameDelay + " to " + delay);
         this.frameDelay = delay;
         if (this.autoplayIntervalId !== null) {
             this.stopAutoplay();
             this.startAutoplay();
-        }
+        }*/
     }
 }
 
