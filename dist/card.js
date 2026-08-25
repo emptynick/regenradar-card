@@ -48794,7 +48794,22 @@ class $ab189090502049a5$export$b531eec335465587 extends (0, $19fe8e3abedf4df0$ex
             (0, $95be21a9180ad848$export$2e2bcd8739ae039).defs($ab189090502049a5$var$gridProjection, $ab189090502049a5$var$gridProjStr);
             (0, $6012a9789a43a621$export$6503ec6e8aabbaf)((0, $95be21a9180ad848$export$2e2bcd8739ae039));
             const tile = new (0, $da4918b2f77ef6de$export$2e2bcd8739ae039)({
-                source: new (0, $25838c5bce8055ee$export$2e2bcd8739ae039)()
+                source: new (0, $25838c5bce8055ee$export$2e2bcd8739ae039)({
+                    crossOrigin: 'anonymous',
+                    tileLoadFunction: (tile, src)=>{
+                        fetch(src, {
+                            referrer: location.href,
+                            referrerPolicy: 'origin',
+                            mode: 'cors'
+                        }).then((r)=>r.blob()).then((blob)=>{
+                            const url = URL.createObjectURL(blob);
+                            const img = tile.getImage();
+                            img.onload = ()=>URL.revokeObjectURL(url);
+                            img.onerror = ()=>URL.revokeObjectURL(url);
+                            img.src = url;
+                        }).catch(()=>tile.setState(3));
+                    }
+                })
             });
             tile.on('prerender', (evt)=>{
                 if (evt.context && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {

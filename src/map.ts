@@ -226,7 +226,25 @@ export class RegenRadarMap extends ReactiveElement {
             register(proj4);
 
             const tile = new Tile({
-                source: new OSM(),
+                source: new OSM({
+                    crossOrigin: 'anonymous',
+                    tileLoadFunction: (tile: any, src: string) => {
+                        fetch(src, {
+                            referrer: location.href,
+                            referrerPolicy: 'origin',
+                            mode: 'cors',
+                        })
+                            .then(r => r.blob())
+                            .then(blob => {
+                                const url = URL.createObjectURL(blob);
+                                const img = tile.getImage() as HTMLImageElement;
+                                img.onload = () => URL.revokeObjectURL(url);
+                                img.onerror = () => URL.revokeObjectURL(url);
+                                img.src = url;
+                            })
+                            .catch(() => tile.setState(3));
+                    },
+                }),
             });
 
             tile.on('prerender', (evt) => {
